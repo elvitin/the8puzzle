@@ -30,6 +30,7 @@ body,
 
 	--tile-size: 86px; /* base desktop */
 	--tile-font: 28px;
+	--mini-tile: 28px;
 }
 
 /* ===== Tipografia, cores e bg globais ===== */
@@ -67,11 +68,13 @@ body {
 	:root {
 		--tile-size: 76px;
 		--tile-font: 26px;
+		--mini-tile: 26px;
 	}
 }
 @media (max-width: 640px) {
 	:root {
 		--tile-size: 64px;
 		--tile-font: 22px;
+		--mini-tile: 24px;
 	}
 }

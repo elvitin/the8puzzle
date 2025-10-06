@@ -9,6 +9,7 @@ import { PuzzleBoard } from './components/PuzzleBoard';
 import { TreeView } from './components/TreeView';
 import { manhattanDistance, misplacedTiles } from './search/heuristics';
 import { findZero, possibleMoves, toD3Tree } from './helpers';
+import type { CustomNodeElementProps } from 'react-d3-tree';
 
 function hValue(key: Heuristics, board: Board, goal: Board): number {
 	return key === 'misplaced' ? misplacedTiles(board, goal) : manhattanDistance(board, goal);
@@ -31,7 +32,6 @@ export function App() {
 	const [execTime, setExecTime] = React.useState<number>(0);
 	const [pathLength, setPathLength] = React.useState<number>(0);
 	const [treeData, setTreeData] = React.useState<TreeNodeData | undefined>();
-	const d3DataMemo = React.useMemo(() => (treeData ? treeData : undefined), [treeData]);
 
 	// Trecho dentro de App.tsx para mover peças
 	function handleTileClick(i: number, j: number) {
@@ -77,23 +77,8 @@ export function App() {
 	}
 
 	return (
-		<React.Fragment>
-			{/* <div>
-				<a href="https://vite.dev" target="_blank">
-					<img src={viteLogo} className="logo" alt="Vite logo" />
-				</a>
-				<a href="https://react.dev" target="_blank">
-					<img src={reactLogo} className="logo react" alt="React logo" />
-				</a>
-			</div> */}
-			<div
-				style={{
-					display: 'grid',
-					gridTemplateColumns: '280px 1fr',
-					gap: 16,
-					height: '100vh',
-				}}
-			>
+		<div className="app-shell">
+			<div className="left-column">
 				<Sidebar
 					onShuffle={shufflePuzzle}
 					onStart={handleStart}
@@ -105,28 +90,98 @@ export function App() {
 					execTime={execTime}
 					pathLength={pathLength}
 				/>
-				<div style={{ display: 'grid', padding: 16, gridTemplateRows: 'auto 1fr', gap: 16 }}>
-					<div>
-						<h3>Estado final (clique em peças vizinhas ao vazio para definir)</h3>
-						<PuzzleBoard board={goalState} onTileClick={handleTileClick} />
-						<h3 style={{ marginTop: 12 }}>Estado Inicial</h3>
-						<PuzzleBoard
-							board={initialState}
-							onTileClick={() => {
-								/* apenas exibição, será randomizado pelo shuffle */
-							}}
-						/>
-						<div>
-							<h3>Árvore de Busca</h3>
-							{d3DataMemo ? (
-								<TreeView data={d3DataMemo} />
-							) : (
-								<div style={{ opacity: 0.7 }}>Clique em Start para gerar a árvore…</div>
-							)}
-						</div>
-					</div>
+				<div className="board-group">
+					<h3>Estado final (clique para editar)</h3>
+					<PuzzleBoard board={goalState} onTileClick={handleTileClick} />
+					<h3 style={{ marginTop: 12 }}>Estado Inicial</h3>
+					<PuzzleBoard
+						board={initialState}
+						onTileClick={() => {
+							/* apenas exibição */
+						}}
+					/>
 				</div>
 			</div>
-		</React.Fragment>
+			<div className="right-column">
+				<h3>Árvore de Busca</h3>
+				{treeData ? (
+					<TreeView data={treeData} renderNode={CustomTreeNode} />
+				) : (
+					<div className="tree-placeholder">Clique em Start para gerar a árvore…</div>
+				)}
+			</div>
+		</div>
+	);
+}
+
+type NodeMetrics = Partial<Record<'g' | 'h' | 'f', number>>;
+
+function parseTreeNode(node: TreeNodeData): { board?: Board; metrics?: NodeMetrics; label: string } {
+	const label = typeof node.name === 'string' ? node.name : '';
+	let board: Board | undefined;
+	let metrics: NodeMetrics | undefined;
+
+	const [boardPart, rawMetrics] = label.split('(');
+	const boardNumbers = boardPart
+		.trim()
+		.split(/\s+/)
+		.map(value => Number(value))
+		.filter(value => !Number.isNaN(value));
+
+	if (boardNumbers.length === 9) {
+		board = [boardNumbers.slice(0, 3), boardNumbers.slice(3, 6), boardNumbers.slice(6, 9)];
+	}
+
+	if (rawMetrics) {
+		rawMetrics
+			.replace(')', '')
+			.split(',')
+			.map(chunk => chunk.trim())
+			.forEach(chunk => {
+				const [keyPart, valuePart] = chunk.split('=');
+				const key = keyPart?.trim();
+				const value = Number(valuePart);
+				if (key && (key === 'g' || key === 'h' || key === 'f') && !Number.isNaN(value)) {
+					if (!metrics) metrics = {};
+					metrics[key] = value;
+				}
+			});
+	}
+
+	return { board, metrics, label };
+}
+
+function CustomTreeNode({ nodeDatum, toggleNode }: CustomNodeElementProps) {
+	const { board, metrics, label } = parseTreeNode(nodeDatum as TreeNodeData);
+	const metricPieces = (['g', 'h', 'f'] as const)
+		.map(metricKey => {
+			const value = metrics?.[metricKey];
+			return value === undefined ? null : `${metricKey}=${value}`;
+		})
+		.filter((value): value is string => value !== null);
+
+	return (
+		<g>
+			<foreignObject x="-70" y="-55" width="140" height="110">
+				<div className="tree-node-card" onClick={toggleNode}>
+					{board ? (
+						<div className="tree-node-board">
+							{board.map((row, rowIndex) => (
+								<div className="tree-node-row" key={rowIndex}>
+									{row.map((value, colIndex) => (
+										<div key={colIndex} className={`tree-node-cell${value === 0 ? ' empty' : ''}`}>
+											{value === 0 ? '' : value}
+										</div>
+									))}
+								</div>
+							))}
+						</div>
+					) : (
+						<div className="tree-node-fallback">{label}</div>
+					)}
+					{metricPieces.length > 0 && <div className="tree-node-metrics">{metricPieces.join(' · ')}</div>}
+				</div>
+			</foreignObject>
+		</g>
 	);
 }
