@@ -26,7 +26,7 @@ export function Sidebar({
 	return (
 		<div className="sidebar">
 			<button type="button" onClick={onShuffle}>
-				Shuffle
+				Embaralhar
 			</button>
 			<div>
 				<label>Avaliação:</label>
@@ -43,7 +43,7 @@ export function Sidebar({
 				</select>
 			</div>
 			<button type="button" onClick={onStart}>
-				Start
+				Iniciar
 			</button>
 			<div className="metrics">
 				<div className="card visited">

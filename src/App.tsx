@@ -72,7 +72,7 @@ export function App() {
 				<div className="board-group">
 					<h3>Estado final (clique para editar)</h3>
 					<PuzzleBoard board={goalState} onTileClick={handleTileClick} />
-					<h3 style={{ marginTop: 12 }}>Estado Inicial</h3>
+					<h3 style={{ marginTop: 12 }}>Estado Inicial (Use o embaralhar)</h3>
 					<PuzzleBoard
 						board={initialState}
 						onTileClick={() => {
