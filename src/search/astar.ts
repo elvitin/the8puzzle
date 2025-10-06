@@ -1,6 +1,7 @@
 // astar.ts (pseudo-código)
-import { cloneBoard, generateNeighbors, serialize } from '../helpers';
+import _ from 'lodash';
 import type { Board } from '../types';
+import { ThePuzzleBoard } from '../game/ThePuzzleBoard';
 
 // src/search/astar.ts
 export type AStarNode = {
@@ -16,10 +17,6 @@ function popMinF(arr: AStarNode[]): AStarNode | undefined {
 	if (arr.length === 0) return undefined;
 	arr.sort((a, b) => a.f - b.f);
 	return arr.shift();
-}
-
-function boardsEq(a: Board, b: Board): boolean {
-	return serialize(a) === serialize(b);
 }
 
 export type AStarArgs = {
@@ -40,11 +37,11 @@ export function aStarSearch({ initial, goal, heuristic }: AStarArgs): AStarResul
 
 	// Nó raiz
 	const h0 = heuristic(initial);
-	const root: AStarNode = { board: cloneBoard(initial), g: 0, h: h0, f: h0, children: [] };
+	const root: AStarNode = { board: _.cloneDeep(initial), g: 0, h: h0, f: h0, children: [] };
 
 	const open: AStarNode[] = [root];
 	const gBest = new Map<string, number>(); // melhor g conhecido por estado
-	gBest.set(serialize(initial), 0);
+	gBest.set(ThePuzzleBoard.toString(initial), 0);
 
 	let nodesVisited = 0;
 
@@ -53,7 +50,7 @@ export function aStarSearch({ initial, goal, heuristic }: AStarArgs): AStarResul
 		nodesVisited++;
 
 		// Objetivo atingido
-		if (boardsEq(current.board, goal)) {
+		if (ThePuzzleBoard.equalsTo(current.board, goal)) {
 			const t1 = performance.now();
 			// calcula tamanho do caminho
 			let len = 0;
@@ -66,9 +63,9 @@ export function aStarSearch({ initial, goal, heuristic }: AStarArgs): AStarResul
 		}
 
 		// Expande vizinhos
-		const neighbors = generateNeighbors(current.board);
+		const neighbors = ThePuzzleBoard.generateNeighbors(current.board);
 		for (const nb of neighbors) {
-			const key = serialize(nb);
+			const key = ThePuzzleBoard.toString(nb);
 			const tentativeG = current.g + 1;
 
 			// Se já temos um g melhor ou igual para este estado, pula

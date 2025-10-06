@@ -1,6 +1,6 @@
 type Board = number[][];
 type Heuristics = 'misplaced' | 'manhattan';
-type SearchAlgorithms = 'astar' | 'bnb';
+type SearchAlgorithms = 'astar' | 'bestfirst';
 
 interface TreeNodeData {
 	name: string;

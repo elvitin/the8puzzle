@@ -39,7 +39,7 @@ export function Sidebar({
 				<label>Algoritmo:</label>
 				<select value={algorithm} onChange={e => setAlgorithm(e.target.value as SearchAlgorithms)}>
 					<option value="astar">A*</option>
-					<option value="bnb">Branch &amp; Bound</option>
+					<option value="bestfirst">Best-First</option>
 				</select>
 			</div>
 			<button type="button" onClick={onStart}>
