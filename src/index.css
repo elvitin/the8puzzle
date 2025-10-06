@@ -1,0 +1,77 @@
+/* ===== Reset e bases globais ===== */
+* {
+	box-sizing: border-box;
+}
+html,
+body,
+#root {
+	height: 100%;
+	margin: 0;
+}
+
+/* ===== Design tokens (variáveis) ===== */
+:root {
+	--bg: #0f172a; /* slate-900 */
+	--panel: #111827; /* gray-900 */
+	--panel-2: #0b1220; /* dark variant */
+	--text: #e5e7eb; /* gray-200 */
+	--muted: #9ca3af; /* gray-400 */
+	--accent: #22d3ee; /* cyan-400 */
+	--accent-2: #06b6d4; /* cyan-500 */
+	--good: #34d399; /* emerald-400 */
+	--warn: #fbbf24; /* amber-400 */
+	--error: #f87171; /* red-400 */
+
+	--radius: 16px;
+	--radius-sm: 12px;
+	--shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+	--gap: 12px;
+	--gap-lg: 16px;
+
+	--tile-size: 86px; /* base desktop */
+	--tile-font: 28px;
+}
+
+/* ===== Tipografia, cores e bg globais ===== */
+body {
+	background: linear-gradient(180deg, var(--bg), #0b1021 60%);
+	color: var(--text);
+	font-family:
+		ui-sans-serif,
+		system-ui,
+		-apple-system,
+		Segoe UI,
+		Roboto,
+		"Helvetica Neue",
+		Arial;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Acessibilidade de foco global ===== */
+:focus-visible {
+	outline: 3px solid rgba(34, 211, 238, 0.4);
+	outline-offset: 2px;
+	border-radius: 16px;
+}
+
+/* ===== Utilitários leves ===== */
+.container {
+	width: min(1200px, 100%);
+	margin-inline: auto;
+	padding: 16px;
+}
+
+/* ===== Responsividade global de tokens ===== */
+@media (max-width: 1024px) {
+	:root {
+		--tile-size: 76px;
+		--tile-font: 26px;
+	}
+}
+@media (max-width: 640px) {
+	:root {
+		--tile-size: 64px;
+		--tile-font: 22px;
+	}
+}
