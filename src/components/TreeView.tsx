@@ -2,7 +2,7 @@ import Tree, { type CustomNodeElementProps } from 'react-d3-tree';
 
 interface TreeViewProps {
 	data: any;
-	renderNode: (props: CustomNodeElementProps) => JSX.Element;
+	renderNode: (props: CustomNodeElementProps) => React.ReactElement;
 }
 
 export function TreeView({ data, renderNode }: TreeViewProps) {
