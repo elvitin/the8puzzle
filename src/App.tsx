@@ -116,7 +116,7 @@ export function App() {
 
 type NodeMetrics = Partial<Record<'g' | 'h' | 'f', number>>;
 
-function parseTreeNode(node: TreeNodeData): { board?: Board; metrics?: NodeMetrics; label: string } {
+function parseTreeNode(node: TreeNodeData): { board?: Board; metrics?: NodeMetrics; label: string; isPath?: boolean } {
 	const label = typeof node.name === 'string' ? node.name : '';
 	let board: Board | undefined;
 	let metrics: NodeMetrics | undefined;
@@ -148,22 +148,38 @@ function parseTreeNode(node: TreeNodeData): { board?: Board; metrics?: NodeMetri
 			});
 	}
 
-	return { board, metrics, label };
+	// Check attributes for metrics if not found in label
+	const attributes = (node as any).attributes;
+	if (attributes && !metrics) {
+		const collected: NodeMetrics = {};
+		(['g', 'h', 'f'] as const).forEach(metric => {
+			const rawValue = attributes[metric];
+			if (typeof rawValue === 'number') {
+				collected[metric] = rawValue;
+			} else if (typeof rawValue === 'string') {
+				const numeric = Number(rawValue);
+				if (!Number.isNaN(numeric)) {
+					collected[metric] = numeric;
+				}
+			}
+		});
+		if (Object.keys(collected).length) {
+			metrics = collected;
+		}
+	}
+
+	const isPath = attributes?.isPath === true || (node as any).isPath === true;
+
+	return { board, metrics, label, isPath };
 }
 
 function CustomTreeNode({ nodeDatum, toggleNode }: CustomNodeElementProps) {
-	const { board, metrics, label } = parseTreeNode(nodeDatum as TreeNodeData);
-	const metricPieces = (['g', 'h', 'f'] as const)
-		.map(metricKey => {
-			const value = metrics?.[metricKey];
-			return value === undefined ? null : `${metricKey}=${value}`;
-		})
-		.filter((value): value is string => value !== null);
+	const { board, metrics, label, isPath } = parseTreeNode(nodeDatum as TreeNodeData);
 
 	return (
 		<g>
-			<foreignObject x="-70" y="-55" width="140" height="110">
-				<div className="tree-node-card" onClick={toggleNode}>
+			<foreignObject x="-70" y="-65" width="140" height="130">
+				<div className={`tree-node-card${isPath ? ' is-path' : ''}`} onClick={toggleNode}>
 					{board ? (
 						<div className="tree-node-board">
 							{board.map((row, rowIndex) => (
@@ -179,7 +195,18 @@ function CustomTreeNode({ nodeDatum, toggleNode }: CustomNodeElementProps) {
 					) : (
 						<div className="tree-node-fallback">{label}</div>
 					)}
-					{metricPieces.length > 0 && <div className="tree-node-metrics">{metricPieces.join(' · ')}</div>}
+					{metrics && (
+						<div className="tree-node-metrics">
+							{(['g', 'h', 'f'] as const).map(metricKey => {
+								const value = metrics[metricKey];
+								return value !== undefined ? (
+									<span key={metricKey} className="metric-badge">
+										{metricKey}={value}
+									</span>
+								) : null;
+							})}
+						</div>
+					)}
 				</div>
 			</foreignObject>
 		</g>
