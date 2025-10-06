@@ -11,6 +11,7 @@ import { manhattanDistance, misplacedTiles } from './search/heuristics';
 import { toD3Tree } from './helpers';
 import { ThePuzzleBoard } from './game/ThePuzzleBoard';
 import { TreeNode } from './components/TreeNode';
+import { bestFirstSearch } from './search/bestfirst';
 
 function hValue(key: Heuristics, board: Board, goal: Board): number {
 	return key === 'misplaced' ? misplacedTiles(board, goal) : manhattanDistance(board, goal);
@@ -39,18 +40,18 @@ export function App() {
 
 	function handleStart() {
 		if (!initialState || !goalState) return;
-		// Medir tempo
-		const start = performance.now();
 
-		const result = aStarSearch({
+		const searchArgs = {
 			initial: initialState,
 			goal: goalState,
-			heuristic: b => hValue(heuristic, b, goalState),
-		});
-		const end = performance.now();
+			heuristic: (b: Board) => hValue(heuristic, b, goalState),
+		};
+
+		const result = algorithm === 'astar' ? aStarSearch(searchArgs) : bestFirstSearch(searchArgs);
+
 		setNodesVisited(result.nodesVisited);
 		setPathLength(result.pathLength);
-		setExecTime(result.execTime ?? end - start);
+		setExecTime(result.execTime);
 		setTreeData(toD3Tree(result.root));
 	}
 

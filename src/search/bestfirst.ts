@@ -1,34 +1,31 @@
 import _ from 'lodash';
-import type { SearchArgs, SearchNode, SearchResult } from '../types';
 import { ThePuzzleBoard } from '../game/ThePuzzleBoard';
+import type { SearchArgs, SearchNode, SearchResult } from '../types';
 
-function popMinF(arr: SearchNode[]): SearchNode | undefined {
+function popMinH(arr: SearchNode[]): SearchNode | undefined {
 	if (arr.length === 0) return undefined;
-	arr.sort((a, b) => a.f - b.f); // A* usa f(n) = g(n) + h(n)
+	arr.sort((a, b) => a.h - b.h); // Best-first uses h(n)
 	return arr.shift();
 }
 
-export function aStarSearch({ initial, goal, heuristic }: SearchArgs): SearchResult {
+export function bestFirstSearch({ initial, goal, heuristic }: SearchArgs): SearchResult {
 	const t0 = performance.now();
 
-	// Nó raiz
 	const h0 = heuristic(initial);
 	const root: SearchNode = { board: _.cloneDeep(initial), g: 0, h: h0, f: h0, children: [] };
 
 	const open: SearchNode[] = [root];
-	const gBest = new Map<string, number>(); // melhor g conhecido por estado
-	gBest.set(ThePuzzleBoard.toString(initial), 0);
+	const visited = new Set<string>(); // To avoid cycles and redundant paths
+	visited.add(ThePuzzleBoard.toString(initial));
 
 	let nodesVisited = 0;
 
 	while (open.length > 0) {
-		const current = popMinF(open)!;
+		const current = popMinH(open)!;
 		nodesVisited++;
 
-		// Objetivo atingido
 		if (ThePuzzleBoard.equalsTo(current.board, goal)) {
 			const t1 = performance.now();
-			// calcula tamanho do caminho
 			let len = 0;
 			let n: SearchNode | undefined = current;
 			while (n?.parent) {
@@ -38,27 +35,24 @@ export function aStarSearch({ initial, goal, heuristic }: SearchArgs): SearchRes
 			return { nodesVisited, pathLength: len, execTime: t1 - t0, root };
 		}
 
-		// Expande vizinhos
 		const neighbors = ThePuzzleBoard.generateNeighbors(current.board);
 		for (const nb of neighbors) {
 			const key = ThePuzzleBoard.toString(nb);
-			const tentativeG = current.g + 1;
 
-			// Se já temos um g melhor ou igual para este estado, pula
-			if (gBest.has(key) && tentativeG >= (gBest.get(key) as number)) continue;
+			if (visited.has(key)) continue;
 
+			visited.add(key);
 			const h = heuristic(nb);
 			const child: SearchNode = {
 				board: nb,
-				g: tentativeG,
+				g: current.g + 1,
 				h,
-				f: tentativeG + h,
+				f: current.g + 1 + h, // f is not used for sorting, but good to have
 				parent: current,
 				children: [],
 			};
-			current.children.push(child); // liga na árvore para visualização
+			current.children.push(child);
 
-			gBest.set(key, tentativeG);
 			open.push(child);
 		}
 	}
