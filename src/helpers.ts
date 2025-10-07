@@ -9,13 +9,24 @@ function boardToLabel(b: Board, g: number, h: number, f: number): string {
           (g=${g}, h=${h}, f=${f})\n`;
 }
 
-function toD3Tree(root: SearchNode | undefined): TreeNodeData | undefined {
+function toD3Tree(root: SearchNode | undefined, solutionPath: SearchNode[] = []): TreeNodeData | undefined {
 	if (!root) return undefined;
 
-	const recur = (n: SearchNode): TreeNodeData => ({
-		name: boardToLabel(n.board, n.g, n.h, n.f),
-		children: n.children?.length ? n.children.map(recur) : undefined,
-	});
+	const solutionNodeSet = new Set(solutionPath);
+
+	const recur = (n: SearchNode): TreeNodeData => {
+		const isPath = solutionNodeSet.has(n);
+		return {
+			name: boardToLabel(n.board, n.g, n.h, n.f),
+			attributes: {
+				g: n.g,
+				h: n.h,
+				f: n.f,
+				isPath,
+			},
+			children: n.children?.length ? n.children.map(recur) : undefined,
+		};
+	};
 
 	return recur(root);
 }

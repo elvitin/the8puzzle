@@ -28,14 +28,14 @@ export function aStarSearch({ initial, goal, heuristic }: SearchArgs): SearchRes
 		// Objetivo atingido
 		if (ThePuzzleBoard.equalsTo(current.board, goal)) {
 			const t1 = performance.now();
-			// calcula tamanho do caminho
-			let len = 0;
+			const path: SearchNode[] = [];
 			let n: SearchNode | undefined = current;
-			while (n?.parent) {
-				len++;
+			while (n) {
+				n.isPath = true;
+				path.unshift(n);
 				n = n.parent;
 			}
-			return { nodesVisited, pathLength: len, execTime: t1 - t0, root };
+			return { nodesVisited, pathLength: path.length - 1, execTime: t1 - t0, root, solutionPath: path };
 		}
 
 		// Expande vizinhos
@@ -64,5 +64,5 @@ export function aStarSearch({ initial, goal, heuristic }: SearchArgs): SearchRes
 	}
 
 	const t1 = performance.now();
-	return { nodesVisited, pathLength: 0, execTime: t1 - t0, root };
+	return { nodesVisited, pathLength: 0, execTime: t1 - t0, root, solutionPath: [] };
 }

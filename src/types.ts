@@ -14,6 +14,7 @@ interface SearchNode {
 	f: number; // f = g + h
 	parent?: SearchNode; // ponteiro para reconstruir o caminho
 	children: SearchNode[]; // filhos gerados (para desenhar a árvore)
+	isPath?: boolean;
 }
 
 interface SearchArgs {
@@ -27,6 +28,7 @@ interface SearchResult {
 	pathLength: number;
 	execTime: number;
 	root?: SearchNode;
+	solutionPath: SearchNode[];
 }
 
 export type { Board, Heuristics, SearchAlgorithms, TreeNodeData, SearchNode, SearchArgs, SearchResult };

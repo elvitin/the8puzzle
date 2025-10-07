@@ -4,7 +4,7 @@ import type { SearchArgs, SearchNode, SearchResult } from '../types';
 
 function popMinH(arr: SearchNode[]): SearchNode | undefined {
 	if (arr.length === 0) return undefined;
-	arr.sort((a, b) => a.h - b.h); // Best-first uses h(n)
+	arr.sort((a, b) => a.h - b.h); // Best-first usa h(n)
 	return arr.shift();
 }
 
@@ -15,24 +15,26 @@ export function bestFirstSearch({ initial, goal, heuristic }: SearchArgs): Searc
 	const root: SearchNode = { board: _.cloneDeep(initial), g: 0, h: h0, f: h0, children: [] };
 
 	const open: SearchNode[] = [root];
-	const visited = new Set<string>(); // To avoid cycles and redundant paths
+	const visited = new Set<string>(); // Para evitar ciclos e caminhos repetidos
 	visited.add(ThePuzzleBoard.toString(initial));
 
 	let nodesVisited = 0;
 
 	while (open.length > 0) {
 		const current = popMinH(open)!;
+		// temos que colocar numa lista.
 		nodesVisited++;
 
 		if (ThePuzzleBoard.equalsTo(current.board, goal)) {
 			const t1 = performance.now();
-			let len = 0;
+			const path: SearchNode[] = [];
 			let n: SearchNode | undefined = current;
-			while (n?.parent) {
-				len++;
+			while (n) {
+				n.isPath = true;
+				path.unshift(n);
 				n = n.parent;
 			}
-			return { nodesVisited, pathLength: len, execTime: t1 - t0, root };
+			return { nodesVisited, pathLength: path.length - 1, execTime: t1 - t0, root, solutionPath: path };
 		}
 
 		const neighbors = ThePuzzleBoard.generateNeighbors(current.board);
@@ -58,5 +60,5 @@ export function bestFirstSearch({ initial, goal, heuristic }: SearchArgs): Searc
 	}
 
 	const t1 = performance.now();
-	return { nodesVisited, pathLength: 0, execTime: t1 - t0, root };
+	return { nodesVisited, pathLength: 0, execTime: t1 - t0, root, solutionPath: [] };
 }

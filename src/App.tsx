@@ -52,7 +52,7 @@ export function App() {
 		setNodesVisited(result.nodesVisited);
 		setPathLength(result.pathLength);
 		setExecTime(result.execTime);
-		setTreeData(toD3Tree(result.root));
+		setTreeData(toD3Tree(result.root, result.solutionPath));
 	}
 
 	return (
