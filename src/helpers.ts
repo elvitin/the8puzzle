@@ -22,9 +22,9 @@ function toD3Tree(root: SearchNode | undefined, solutionPath: SearchNode[] = [])
 				g: n.g,
 				h: n.h,
 				f: n.f,
-				isPath,
+				isPath
 			},
-			children: n.children?.length ? n.children.map(recur) : undefined,
+			children: n.children?.length ? n.children.map(recur) : undefined
 		};
 	};
 

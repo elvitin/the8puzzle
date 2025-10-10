@@ -54,7 +54,7 @@ export function aStarSearch({ initial, goal, heuristic }: SearchArgs): SearchRes
 				h,
 				f: tentativeG + h,
 				parent: current,
-				children: [],
+				children: []
 			};
 			current.children.push(child); // liga na árvore para visualização
 

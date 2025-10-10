@@ -51,7 +51,7 @@ export function bestFirstSearch({ initial, goal, heuristic }: SearchArgs): Searc
 				h,
 				f: current.g + 1 + h, // f is not used for sorting, but good to have
 				parent: current,
-				children: [],
+				children: []
 			};
 			current.children.push(child);
 

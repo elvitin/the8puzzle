@@ -59,7 +59,7 @@ class ThePuzzleBoard {
 		return [
 			[1, 2, 3],
 			[4, 5, 6],
-			[7, 8, 0],
+			[7, 8, 0]
 		];
 	}
 
@@ -81,7 +81,7 @@ class ThePuzzleBoard {
 			[-1, 0],
 			[1, 0],
 			[0, -1],
-			[0, 1],
+			[0, 1]
 		];
 		const res: [number, number][] = [];
 		for (const [di, dj] of dirs) {
