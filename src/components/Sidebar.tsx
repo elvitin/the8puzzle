@@ -1,4 +1,5 @@
 import type { Heuristics, SearchAlgorithms } from '../types';
+import { Button } from './ui/button';
 
 interface SidebarProps {
 	onShuffle: () => void;
@@ -21,13 +22,13 @@ export function Sidebar({
 	setAlgorithm,
 	nodesVisited,
 	execTime,
-	pathLength,
+	pathLength
 }: SidebarProps) {
 	return (
 		<div className="sidebar">
-			<button type="button" onClick={onShuffle}>
+			<Button type="button" onClick={onShuffle}>
 				Embaralhar
-			</button>
+			</Button>
 			<div>
 				<label>Avaliação:</label>
 				<select value={heuristic} onChange={e => setHeuristic(e.target.value as Heuristics)}>
@@ -42,9 +43,9 @@ export function Sidebar({
 					<option value="bestfirst">Best-First</option>
 				</select>
 			</div>
-			<button type="button" onClick={onStart}>
+			<Button type="button" onClick={onStart}>
 				Iniciar
-			</button>
+			</Button>
 			<div className="metrics">
 				<div className="card visited">
 					<span className="label">Nós visitados</span>

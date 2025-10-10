@@ -12,12 +12,14 @@ import { toD3Tree } from './helpers';
 import { ThePuzzleBoard } from './game/ThePuzzleBoard';
 import { TreeNode } from './components/TreeNode';
 import { bestFirstSearch } from './search/bestfirst';
+import { Button } from './components/ui/button';
+import { Separator } from './components/ui/separator';
 
 function hValue(key: Heuristics, board: Board, goal: Board): number {
 	return key === 'misplaced' ? misplacedTiles(board, goal) : manhattanDistance(board, goal);
 }
 
-export function App() {
+export function App1() {
 	const [goalBoardState] = React.useState<ThePuzzleBoard>(new ThePuzzleBoard());
 
 	const [initialState, setInitialState] = React.useState<Board>(ThePuzzleBoard.createBoard());
@@ -44,7 +46,7 @@ export function App() {
 		const searchArgs = {
 			initial: initialState,
 			goal: goalState,
-			heuristic: (b: Board) => hValue(heuristic, b, goalState),
+			heuristic: (b: Board) => hValue(heuristic, b, goalState)
 		};
 
 		const result = algorithm === 'astar' ? aStarSearch(searchArgs) : bestFirstSearch(searchArgs);
@@ -90,5 +92,17 @@ export function App() {
 				)}
 			</div>
 		</div>
+	);
+}
+
+export function App() {
+	return (
+		<React.Fragment>
+			<div className="md:hidden bg-amber-500"></div>
+			<div className="hidden flex-1 flex-col md:flex bg-blue-400">
+				<div></div>
+				<Separator />
+			</div>
+		</React.Fragment>
 	);
 }
