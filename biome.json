@@ -23,7 +23,8 @@
 			"quoteStyle": "single",
 			"arrowParentheses": "asNeeded",
 			"lineWidth": 120,
-			"indentWidth": 2
+			"indentWidth": 2,
+			"trailingCommas": "none"
 		}
 	},
 	"assist": {
